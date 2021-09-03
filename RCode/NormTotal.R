@@ -424,3 +424,158 @@ rownames(cellNum) <- paste("Cluster", rownames(cellNum))
 write.csv(cellNum, file="NormTotalSub-CellCounts.csv")
 
 
+
+#####################################
+### Fibroblast
+# Fig 3 C-F
+Fib <- ClusterSub == 1
+
+cellNamesFib <- rownames(NormTotalSub@meta.data)[Fib]
+DGEFib <- paste0("dge_fib_", SamplesComb)
+DDFib <- paste0("dd_fib_", SamplesComb)
+for(i in 1:length(SamplesComb)) {
+    d <- get(DD[i])
+    d <- d[, colnames(d) %in% cellNamesFib]
+    keep1 <- rowSums(d$counts > 0) >= ncol(d)*0.01
+    eval( parse(text=paste0(DDFib[i],"<- d")) )
+    d <- d[keep1, , keep=FALSE]
+    eval( parse(text=paste0(DGEFib[i],"<- d")) )
+}
+
+# HVGs
+SamplesCombFib <- paste0(SamplesComb, "_Fib")
+CombSeuratFib <- list()
+for(i in 1:length(SamplesCombFib)) {
+    d <- get(DGEFib[i])
+    so <- CreateSeuratObject(d$counts, project=SamplesCombFib[i])
+    so <- NormalizeData(so)
+    so <- FindVariableFeatures(so, selection.method="vst", nfeatures=1500)
+    so <- ScaleData(so)
+    so@meta.data$group <- SamplesComb[i]
+    CombSeuratFib[[i]] <- so
+    eval( parse(text=paste0(SamplesCombFib[i],"<- so")) )
+}
+names(CombSeuratFib) <- SamplesCombFib
+
+# Integration
+dimUsed <- 30
+AnchorsFib <- FindIntegrationAnchors(object.list=CombSeuratFib, dims=1:dimUsed,
+    anchor.features=1000, scale=TRUE, k.anchor=5, k.filter=30,
+    k.score=20, max.features=100)
+NormTotalFib <- IntegrateData(anchorset=AnchorsFib, dims=1:dimUsed, k.weight=100)
+
+# Dimensional reduction
+dimUsed <- 30
+DefaultAssay(NormTotalFib) <- "integrated"
+NormTotalFib <- ScaleData(NormTotalFib, verbose=FALSE)
+NormTotalFib <- RunPCA(NormTotalFib, npcs=dimUsed, verbose=FALSE)
+NormTotalFib <- RunTSNE(NormTotalFib, dims=1:dimUsed, seed.use=2018)
+tSNE <- NormTotalFib@reductions$tsne@cell.embeddings
+
+GroupFib <- factor(NormTotalFib@meta.data$group, levels=SamplesComb)
+plotOrd <- sample(ncol(NormTotalFib))
+
+col.p2 <- c("darkblue", "gold2")
+GroupFib2 <- c("Pre-meno", "Post-meno")[GroupFib %in% c("N_0342_total", "N_0372_total","N_0021_total","N_0275_total","N_0288_total") + 1L]
+GroupFib2 <- factor(GroupFib2, levels=c("Pre-meno", "Post-meno"))
+
+# Clustering
+resolution <- 0.1
+NormTotalFib <- FindNeighbors(NormTotalFib, dims=1:dimUsed, verbose=FALSE)
+NormTotalFib <- FindClusters(NormTotalFib, resolution=resolution, verbose=FALSE)
+ClusterFib <- as.integer(NormTotalFib@meta.data$seurat_clusters)
+ncls <- length(table(ClusterFib))
+
+# Fig 3C
+pdf("Fig3C.pdf", height=9, width=9)
+col <- col.p[GroupFib]
+plot(tSNE[plotOrd,], pch=16, col=col[plotOrd], cex=0.7, xlab="tSNE-1", ylab="tSNE-2",
+    main="t-SNE - By sample")
+dev.off()
+
+# Fig 3D
+pdf("Fig3D.pdf", height=9, width=9)
+col <- col.p[ClusterFib]
+plot(tSNE, pch=16, col=col, cex=0.7, xlab="tSNE-1", ylab="tSNE-2", main="t-SNE - By cluster")
+dev.off()
+
+
+# Combine raw data
+allGenes <- rownames(get(DDFib[1]))
+allGenesFilter <- c()
+for(i in DGEFib) allGenesFilter <- c(allGenesFilter, rownames(get(i)))
+allGenesFilter <- names(table(allGenesFilter))[table(allGenesFilter) >= 2]
+u <- get(DDFib[1])
+d <- u[allGenes, ]
+y <- u[allGenesFilter, ]
+for(i in 2:length(SamplesComb)) {
+    u <- get(DDFib[i])
+    d <- cbind(d, u[allGenes, ])
+    y <- cbind(y, u[allGenesFilter, ])
+}
+d$samples$group <- y$samples$group <- GroupFib
+
+# log-CPM
+prior.count <- 1
+z <- edgeR::cpm(d, log=TRUE, prior.count=prior.count)
+
+#save(z, d, y, SamplesCombFib, GroupFib, GroupFib2, ncls, ClusterFib, col.p, col.p2, tSNE, file="NormTotalFib.RData")
+#saveRDS(NormTotalFib, file="SeuratObject_NormTotalFib.rds")
+
+
+# Marker genes
+markers <- list()
+for(i in 1:ncls){
+    markers[[i]] <- FindMarkers(NormTotalFib, ident.1=i-1, min.pct=0.1, only.pos=TRUE)
+}
+names(markers) <- paste0("Cluster", 1:ncls)
+
+top <- 20
+nTop <- pmin(top, sapply(markers, nrow))
+topMarkers <- c()
+for(i in 1:ncls) topMarkers <- c(topMarkers, rownames(markers[[i]][1:nTop[i],]))
+topMarkers <- topMarkers[!duplicated(topMarkers)]
+topMarkers
+
+# Fig 3F
+pdf("Fig3F.pdf", height=9, width=7)
+mat <- t(scale(t(z[topMarkers, ])))
+ord <- order(ClusterFib, GroupFib2)
+annot <- data.frame(Condition=GroupFib2[ord], Cluster=paste0("Cluster ", ClusterFib[ord]))
+rownames(annot) <- colnames(mat)[ord]
+ann_colors <- list(Cluster=col.p[1:ncls], Condition=col.p2)
+names(ann_colors$Cluster) <- paste0("Cluster ", 1:ncls)
+names(ann_colors$Condition) <- levels(GroupFib2)
+library(pheatmap)
+pheatmap(mat[,ord], color=colorRampPalette(c("blue","white","red"))(100), 
+    breaks=seq(-2,2,length.out=101), cluster_cols=FALSE, scale="none", 
+    labels_col=rep("",ncol(mat)), fontsize_row=7, 
+    clustering_method="ward.D2", annotation_col=annot, annotation_colors=ann_colors)
+dev.off()
+
+# KEGG analysis
+mk1vs2 <- FindMarkers(NormTotalFib, ident.1=0, ident.2=1, min.pct=0.1, only.pos=TRUE)
+mk1vs2 <- mk1vs2[mk1vs2$p_val_adj < 0.05, ]
+
+anno <- read.delim(file="../Data/200702_Homo_sapiens.gene_info.gz", 
+    header=TRUE)[,-1]
+Universe <- rownames(NormTotalFib@assays$RNA)
+m <- match(Universe, anno$Symbol)
+UniverseID <- anno$GeneID[m]
+UniverseID <- UniverseID[!is.na(UniverseID)]
+m <- match(rownames(mk1vs2), anno$Symbol)
+mk1v2ID <- anno$GeneID[m]
+mk1v2ID <- mk1v2ID[!is.na(mk1v2ID)]
+keg1v2 <- kegga(mk1v2ID, universe=UniverseID, species="Hs")
+topKEGG(keg1v2, truncate=43)
+topKEGG(keg1v2)
+
+res <- topKEGG(keg1v2)
+sel <- c(2:5,8,6,11,13,15)
+
+# Fig 3E
+pdf("Fig3E.pdf", height=9, width=6)
+par(mar=c(24, 5, 2, 2))
+barplot(-log10(res$P.DE[sel]), col="darkblue", names=res$Pathway[sel], ylab="-Log10(P-Value)", xlab="", las=2)
+dev.off()
+

@@ -1,5 +1,3 @@
-#cp -r ~/Project/Bhupinder/10X_Human/_10X-Normal-Epi-Combine/Data/ /wehisan/general/academic/lab_smyth/cheny/Project/BPal/10X_Human/ScientificData/NormEpi/
-
 smythlab
 cd cheny/Project/BPal/10X_Human/ScientificData/NormEpi
 module load R/3.6.1

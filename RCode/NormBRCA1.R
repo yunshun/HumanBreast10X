@@ -1,3 +1,4 @@
+#cp -r ~/Project/Bhupinder/10X_Human/_10X-Normal-Total-Combine/Data/ /wehisan/general/academic/lab_smyth/cheny/Project/BPal/10X_Human/ScientificData/Data/
 
 smythlab
 cd cheny/Project/BPal/10X_Human/ScientificData/NormBRCA1

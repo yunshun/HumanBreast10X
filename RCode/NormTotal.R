@@ -424,6 +424,33 @@ rownames(cellNum) <- paste("Cluster", rownames(cellNum))
 write.csv(cellNum, file="NormTotalSub-CellCounts.csv")
 
 
+# Quasi-Poisson GLM: cluster 1
+cellNum1 <- rowsum(cellNum, c(1,2,2,2,2,2,2))
+grp1 <- rep(1:2, c(8,5))
+y1 <- DGEList(counts=cellNum1, group=grp1)
+pat1 <- gl(13,2)
+PostMeno1 <- factor(rep(y1$sample$group, each=2))
+clust1 <- gl(2,1,13*2)
+
+v1 <- as.vector(cellNum1)
+fit1 <- glm(v1 ~ clust1 + pat1 + PostMeno1:clust1, family=quasipoisson())
+summary(fit1)
+anova(fit1, test="F")
+
+# Quasi-Poisson GLM: cluster 2
+cellNum2 <- rowsum(cellNum, c(2,1,2,2,2,2,2))
+grp2 <- rep(1:2, c(8,5))
+y2 <- DGEList(counts=cellNum2, group=grp2)
+pat2 <- gl(13,2)
+PostMeno2 <- factor(rep(y2$sample$group, each=2))
+clust2 <- gl(2,1,13*2)
+
+v2 <- as.vector(cellNum2)
+fit2 <- glm(v2 ~ clust2 + pat2 + PostMeno2:clust2, family=quasipoisson())
+summary(fit2)
+anova(fit2, test="F")
+
+
 
 #####################################
 ### Fibroblast
@@ -578,4 +605,6 @@ pdf("Fig3E.pdf", height=9, width=6)
 par(mar=c(24, 5, 2, 2))
 barplot(-log10(res$P.DE[sel]), col="darkblue", names=res$Pathway[sel], ylab="-Log10(P-Value)", xlab="", las=2)
 dev.off()
+
+
 

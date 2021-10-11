@@ -1,0 +1,24 @@
+##### ER-Total (Fig.6D right)
+Column blocks from left to right:
+
+Blue: ER_0319, ER_0001, ER_0025, ER_0032, ER_0040_T, ER_0042, ER_0043_T, ER_0125, ER_0151, ER_0163, ER_0167_T, ER_0360, ER_0114_T3;
+Green: ER_0319, ER_0001, ER_0040_T, ER_0042, ER_0043_T, ER_0125, ER_0163, ER_0167_T, ER_0360;
+Brown: ER_0001, ER_0032, ER_0043_T, ER_0114_T3;
+Pink: ER_0043_T, ER_0114_T3;
+
+
+##### HER2 (Fig.6D middle)
+Column blocks from left to right:
+
+Blue: HER2_0308, HER2_0031, HER2_0069, HER2_0161, HER2_0176, HER2_0337;
+Green: HER2_0308, HER2_0031, HER2_0161, HER2_0176, HER2_0337;
+Grey: HER2_0308, HER2_0161, HER2_0176;
+
+
+##### TNBC (Fig.6D left)
+Column blocks from left to right:
+
+Blue: TN_0126, TN_B1_0131, TN_0135, TN_B1_0177, TN_B1_4031, TN_0114_T2, TN_B1_0554;
+Green: TN_0126, TN_B1_0131, TN_0135, TN_B1_0177, TN_B1_4031, TN_B1_0554;
+
+

@@ -1,5 +1,4 @@
-### R code from vignette source
-
+### Read in the data
 counts <- read.delim("../Data/GeneCountMatrix.txt.gz", stringsAsFactors=FALSE)
 genes <- counts[,1:2]
 counts <- counts[,-c(1:2)]

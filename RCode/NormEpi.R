@@ -1,17 +1,7 @@
-smythlab
-cd cheny/Project/BPal/10X_Human/ScientificData/NormEpi
-module load R/3.6.1
-module load python/3.7.0
-
-R
-
-#library(scater)
-#library(scran)
+### R v3.6.1
 library(Seurat)
 library(edgeR)
 library(vcd)
-#library(gplots)
-#library(ggplot2)
 library(pheatmap)
 
 col.pMedium <- scater:::.get_palette("tableau10medium")

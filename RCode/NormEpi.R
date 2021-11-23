@@ -78,10 +78,6 @@ for(i in 1:length(SamplesComb)) {
     eval( parse(text=paste0(DGE[i],"<- y")) )
 }
 
-#<<save,echo=FALSE>>=
-#eval( parse(text=paste0( "save(col.p,col.pDark,col.pMedium,col.pLight,Samples,DGE,DD,", paste(DGE, collapse=","),",",paste(DD, collapse=","), ",file=\'save.RData\')")) )
-#for(i in 1:length(Samples)) eval( parse(text=paste0( "save(col.p,col.pDark,col.pMedium,col.pLight,Samples,DGE,DD,", DGE[i], ",", DD[i], ",file=\'", Samples[i], ".RData\')")) )
-#@
 
 ### Individual Seurat object
 for(i in 1:length(SamplesComb)){

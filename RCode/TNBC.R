@@ -1,16 +1,7 @@
-smythlab
-cd cheny/Project/BPal/10X_Human/ScientificData/TNBC
-module load R/3.6.1
-module load python/3.7.0
-
-R
-
-#library(scater)
-#library(scran)
+### R v3.6.1
 library(Seurat)
 library(edgeR)
 library(vcd)
-#library(gplots)
 library(ggplot2)
 library(pheatmap)
 
@@ -18,7 +9,6 @@ col.pMedium <- scater:::.get_palette("tableau10medium")
 col.pDark <- scater:::.get_palette("tableau20")[2*(1:10)-1]
 col.pLight <- scater:::.get_palette("tableau20")[2*(1:10)]
 col.p <- c(col.pDark, col.pLight)
-
 
 #####################################
 # Fig 6 A, 7 A, EV2 A

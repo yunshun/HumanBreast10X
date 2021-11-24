@@ -1,16 +1,7 @@
-smythlab
-cd cheny/Project/BPal/10X_Human/ScientificData/QC
-module load R/3.6.1
-module load python/3.7.0
-
-R
-
-#library(scater)
-#library(scran)
+### R v3.6.1
 library(Seurat)
 library(edgeR)
 library(vcd)
-#library(gplots)
 library(ggplot2)
 library(pheatmap)
 
@@ -19,8 +10,7 @@ col.pDark <- scater:::.get_palette("tableau20")[2*(1:10)-1]
 col.pLight <- scater:::.get_palette("tableau20")[2*(1:10)]
 col.p <- c(col.pDark, col.pLight)
 
-
-### Samples to be combined
+### Samples
 Samples <- c("N-0092-total", "N-0019-total", "N-0280-epi", "N-0093-epi", "N-0093-total", "N-1469-epi", "N-0408-epi", 
     "N-1105-epi", "N-0230.17-total", "N-0064-epi", "N-0064-total", "N-0230.16-epi", "N-0233-total", "N-0169-total", 
     "N-0123-epi", "N-0123-total", "N-0342-epi", "N-0342-total", "N-0288-total", "N-0021-total", "N-0275-epi", 

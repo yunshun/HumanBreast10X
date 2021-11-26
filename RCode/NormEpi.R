@@ -2,6 +2,7 @@
 library(Seurat)
 library(edgeR)
 library(vcd)
+library(ggplot2)
 library(pheatmap)
 
 col.pMedium <- scater:::.get_palette("tableau10medium")
@@ -9,16 +10,10 @@ col.pDark <- scater:::.get_palette("tableau20")[2*(1:10)-1]
 col.pLight <- scater:::.get_palette("tableau20")[2*(1:10)]
 col.p <- c(col.pDark, col.pLight)
 
-
-#dge <- read10X(path="../Data/N280/", DGEList=TRUE)
-
 ### Samples to be combined
-#SamplesComb <- c("N1105","N280","N1B","NE","NF","MH0023Epi","MH0064Epi",
-#    "PM0095Epi","PM0342Epi","PM0372Epi","MH275Epi")
 Samples <- c("N-1105-epi","N-0280-epi","N-0230.16-epi","N-0408-epi","N-1469-epi","N-0123-epi","N-0064-epi",
     "N-0093-epi","N-0342-epi","N-0372-epi","N-0275-epi")
 SamplesComb <- gsub("-","_",Samples)
-
 
 ### Readin the data
 DGE <- paste0("dge_", SamplesComb)
@@ -412,22 +407,4 @@ anova(fit, test="F")
 colnames(cellNum) <- Samples
 rownames(cellNum) <- paste("Cluster", rownames(cellNum))
 write.csv(cellNum, file="NormEpiSub-CellCounts.csv")
-
-
-
-
-################
-library(destiny)
-setwd("DestinySV33Sub/")
-knit("DestinySV33Sub.Rnw")
-setwd("../")
-
-##### Primed cells on diffusion plot
-setwd("~/Project/Bhupinder_SingleCell/Human/_10X-Normal-Epi-Combine/SeuratV3")
-load("NormEpiSub_tSNE.RData")
-source("../../pipFromLocator.R")
-
-
-
-
 

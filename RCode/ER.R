@@ -12,11 +12,9 @@ col.p <- c(col.pDark, col.pLight)
 
 
 #####################################
-# Fig 
+# Fig EV3, 6
 
 ### Samples to be combined
-#SamplesComb <- c("T3MH0114","PM0360","MH0167Tum","MH0151","MH0032","MH0125",
-#    "MH0043Tum","MH0025","MH0001","MH0042","AH0319","MH0040Tum","MH0163")
 Samples <- c("ER-0114-T3", "ER-0360", "ER-0167-T", "ER-0151", "ER-0032", "ER-0125",
     "ER-0043-T", "ER-0025", "ER-0001", "ER-0042", "ER-0319", "ER-0040-T", "ER-0163")
 SamplesComb <- gsub("-","_",Samples)

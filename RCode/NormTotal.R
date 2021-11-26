@@ -48,11 +48,15 @@ for(i in 1:length(SamplesComb)) {
 }
 
 # Cell filtering (potential doublets)
-mito_upper <- rep(0.2, length(SamplesComb))
-mito_upper[6] <- 0.3
-nGenes_lower <- rep(500, length(SamplesComb))
-nGenes_upper <- 1e3 * c(7.5, 9, 6.5, 8, 7, 7, 6.5, 5, 7, 8, 2.7, 6.5, 6)
-lib_upper <- 1e4 * c(8, 12, 7, 12, 6, 6, 6, 3, 6, 8, 1, 6, 5)
+SampleStats <- read.delim("../Data/SampleStats.txt")
+m <- match(Samples, SampleStats$SampleName)
+SampleStats <- SampleStats[m,]
+
+mito_upper <- SampleStats$Mito
+nGenes_lower <- SampleStats$GeneLower
+nGenes_upper <- SampleStats$GeneUpper
+lib_upper <- SampleStats$LibSize
+
 for(i in 1:length(SamplesComb)){
     y <- get(DGE[i])
     keep.mito <- y$samples$percent.mito < mito_upper[i]

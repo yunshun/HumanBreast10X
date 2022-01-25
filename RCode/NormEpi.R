@@ -26,7 +26,7 @@ for(i in 1:length(SamplesComb)) {
 ### Gene annotation
 for(i in 1:length(SamplesComb)){
     ann <- alias2SymbolUsingNCBI(get(DGE[i])$genes$Symbol, required.columns=c("GeneID","Symbol"), 
-        gene.info.file="~/Annotation/180808_Homo_sapiens.gene_info.gz")
+        gene.info.file="../Data/180808_Homo_sapiens.gene_info.gz")
     Genes <- cbind(get(DGE[i])$genes, Official=ann$Symbol, GeneID=ann$GeneID)
     eval(parse(text=paste0(DGE[i],"$genes <- Genes")))
 }
